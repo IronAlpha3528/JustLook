@@ -1,6 +1,7 @@
 "use client"
 import { SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
 import { HistoryIcon, ListVideoIcon, ThumbsUpIcon } from "lucide-react"
+import { useAuth, useClerk } from "@clerk/nextjs"
 import Link from "next/link"
 
 const items = [
@@ -9,7 +10,7 @@ const items = [
         url: "/playlists/history",
         icon: HistoryIcon,
         auth: true
- 
+
     },
     {
         title: "Liked Videos",
@@ -28,6 +29,9 @@ const items = [
 
 export const PersonalSection = () => {
 
+    const { isSignedIn } = useAuth()
+    const clerk = useClerk()
+
     return (
         <SidebarGroup>
             <SidebarGroupLabel>You</SidebarGroupLabel>
@@ -37,16 +41,19 @@ export const PersonalSection = () => {
                         <SidebarMenuItem key={item.title}>
                             <SidebarMenuButton
                                 tooltip={item.title}
-                                asChild
+                                render={<Link href={item.url} className="flex items-center gap-4" />}
                                 isActive={false} // TODO : Change to look at current pathname
-                                onClick={() => { }} // TODO : Do something on click
+                                onClick={(e) => {
+                                    if (!isSignedIn) {
+                                        e.preventDefault()
+                                        return clerk.openSignIn()
+                                    }
+                                }}
                             >
-
-                                <Link href={item.url} className="flex items-center gap-4">
+                                <>
                                     <item.icon />
                                     <span className="text-sm">{item.title}</span>
-                                </Link>
-
+                                </>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
                     ))}

@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { ClerkProvider } from "@clerk/nextjs";
+import { TRPCReactProvider } from "@/trpc/client";
 
-const inter = Inter({subsets: ["latin"]})
+const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -11,11 +13,15 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      className={inter.className}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
-    </html>
+    <ClerkProvider afterSignOutUrl="/" >
+      <html
+        lang="en"
+        className={inter.className}
+      >
+        <body className="min-h-full flex flex-col">
+          <TRPCReactProvider>{children}</TRPCReactProvider>
+          </body>
+      </html>
+    </ClerkProvider>
   );
 }
